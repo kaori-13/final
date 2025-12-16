@@ -15,11 +15,11 @@ import SwiftUI
 
 struct BarlineView: View {
     let scores: [Scorecollect] = [
-        Scorecollect(name: "小明", score: "500"),
-        Scorecollect(name: "小花", score: "800"),
-        Scorecollect(name: "小羊", score: "350"),
-        Scorecollect(name: "小虎", score: "620"),
-        Scorecollect(name: "小小", score: "900"),
+        Scorecollect(name: "梵谷", score: "500"),
+        Scorecollect(name: "達利", score: "800"),
+        Scorecollect(name: "安迪", score: "350"),
+        Scorecollect(name: "莫內", score: "620"),
+        Scorecollect(name: "卡索", score: "900"),
     ]
 
     var body: some View {

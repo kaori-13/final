@@ -7,9 +7,11 @@
 
 import SwiftUI
 
+import SwiftUI
+
 struct GameView: View {
     @EnvironmentObject var appState: AppState
-
+    @Binding var path: NavigationPath
 
     struct Question {
         let text: String
@@ -17,6 +19,7 @@ struct GameView: View {
         let correctIndex: Int
     }
 
+    // ✅ 題庫（剛好 10 題）
     private let questions: [Question] = [
         .init(
             text: "The project team must ___ the deadline for the final report.",
@@ -34,41 +37,40 @@ struct GameView: View {
             correctIndex: 0
         ),
         .init(
-            text: "We need to ___ a decision by Friday.",
-            options: ["make", "do", "take", "put"],
+            text: "She decided to ___ the offer after careful consideration.",
+            options: ["accept", "accepts", "accepted", "accepting"],
             correctIndex: 0
         ),
         .init(
-            text: "We need to ___ a decision by Friday.",
-            options: ["make", "do", "take", "put"],
+            text: "The manager will ___ the proposal tomorrow.",
+            options: ["review", "reviews", "reviewed", "reviewing"],
             correctIndex: 0
         ),
         .init(
-            text: "We need to ___ a decision by Friday.",
-            options: ["make", "do", "take", "put"],
+            text: "Please ___ your seat belt during the flight.",
+            options: ["fasten", "fastens", "fastened", "fastening"],
             correctIndex: 0
         ),
         .init(
-            text: "We need to ___ a decision by Friday.",
-            options: ["make", "do", "take", "put"],
+            text: "They will ___ the meeting until next week.",
+            options: ["postpone", "postpones", "postponed", "postponing"],
             correctIndex: 0
         ),
         .init(
-            text: "We need to ___ a decision by Friday.",
-            options: ["make", "do", "take", "put"],
+            text: "We should ___ attention to the details.",
+            options: ["pay", "give", "take", "make"],
             correctIndex: 0
         ),
         .init(
-            text: "We need to ___ a decision by Friday.",
-            options: ["make", "do", "take", "put"],
+            text: "He tried to ___ the issue with his teammate.",
+            options: ["discuss", "discussion", "discussed", "discussing"],
             correctIndex: 0
         ),
         .init(
-            text: "We need to ___ a decision by Friday.",
-            options: ["make", "do", "take", "put"],
+            text: "The company plans to ___ new products next month.",
+            options: ["launch", "launched", "launches", "launching"],
             correctIndex: 0
         )
-        
     ]
 
     // quiz progress
@@ -80,9 +82,6 @@ struct GameView: View {
     @State private var selectedIndex: Int? = nil
     @State private var showResult = false
     @State private var isLocked = false
-
-    // navigation
-    @State private var showSummary = false
 
     var body: some View {
         let q = questions[currentIndex]
@@ -157,14 +156,6 @@ struct GameView: View {
             .padding()
         }
         .navigationTitle("下一個")
-        .navigationDestination(isPresented: $showSummary) {
-            ResultView(
-                total: questions.count,
-                correct: correctCount
-            ) {
-                resetQuiz()
-            }
-        }
     }
 
     // MARK: - Quiz Logic
@@ -181,13 +172,13 @@ struct GameView: View {
         if isCorrect { correctCount += 1 }
 
         if isCorrect {
-            // 答對：立刻下一題（留一點點時間顯示回饋）
+            // 答對：很快換下一題
             Task { @MainActor in
                 try? await Task.sleep(nanoseconds: 250_000_000) // 0.25 秒
                 advanceOrFinish()
             }
         } else {
-            // 答錯：停 3 秒再下一題
+            // 答錯：停 3 秒再換下一題
             Task { @MainActor in
                 try? await Task.sleep(nanoseconds: 3_000_000_000)
                 advanceOrFinish()
@@ -198,26 +189,20 @@ struct GameView: View {
     @MainActor
     private func advanceOrFinish() {
         if currentIndex == questions.count - 1 {
-            let score = correctCount * 100   // ✅ 你可以改成你的計分方式
+            // ✅ 存高分
+            let score = correctCount * 100
             appState.updateHighScore(player: appState.activePlayerName, newScore: score)
-            showSummary = true
+
+            // ✅ 回首頁（清空 NavigationStack）
+            path = NavigationPath()
             return
         }
 
+        // 下一題
         currentIndex += 1
         selectedIndex = nil
         showResult = false
         isLocked = false
-    }
-
-    private func resetQuiz() {
-        currentIndex = 0
-        correctCount = 0
-        answeredCount = 0
-        selectedIndex = nil
-        showResult = false
-        isLocked = false
-        showSummary = false
     }
 
     // MARK: - UI Helpers
@@ -234,149 +219,12 @@ struct GameView: View {
     }
 }
 
-struct ResultView: View {
-    let total: Int
-    let correct: Int
-    let onRestart: () -> Void
 
-    var body: some View {
-        let rate = total == 0 ? 0 : Double(correct) / Double(total) * 100
 
-        ZStack {
-            Color.blue.opacity(0.1).ignoresSafeArea()
-
-            VStack(spacing: 16) {
-                Text("完成！")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-
-                Text("Score: \(correct) / \(total)")
-                    .font(.title2)
-
-                Text(String(format: "Accuracy: %.1f%%", rate))
-                    .font(.title3)
-                    .opacity(0.8)
-
-                Button {
-                    onRestart()
-                } label: {
-                    Text("再玩一次")
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.blue.opacity(0.25))
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                }
-                .padding(.top, 10)
-
-                Spacer()
-            }
-            .padding()
-        }
-        .navigationTitle("結果")
+#Preview {
+    NavigationStack {
+        GameView(path: .constant(NavigationPath()))
+            .environmentObject(AppState())
     }
 }
 
-
-//struct GameView: View {
-//    
-//    var body: some View {
-//        ZStack {
-//            Color.blue.opacity(0.1).ignoresSafeArea() // 背景色
-//            VStack {
-//                Text("The project team must ___ the deadline for the final report.")
-//                    .font(.largeTitle)
-//                    .padding()
-//                Text("A: meet")
-//                    .padding()
-//                Text("B: reach")
-//                    .padding()
-//                Text("C: contact")
-//                    .padding()
-//                Text("D: arrive")
-//                    .padding()
-//            }
-//        }
-//        .navigationTitle("下一個") // 設定第二個畫面頂部的標題
-//    }
-//}
-
-//struct HomeView: View {
-//    @Binding var path: NavigationPath
-//
-//    var body: some View {
-//        ZStack {
-//            Image("bg1")
-//                .scaledToFit()
-//                .ignoresSafeArea()
-//                .opacity(0.9)
-//
-//            VStack(spacing: 20) {
-//
-//                Text("Masterpiece Quest")
-//                    .foregroundStyle(.white)
-//                    .font(.system(size: 25,weight: .bold,design: .serif))
-//
-//                Text("藝術鑑賞家")
-//                    .font(.system(size: 60,weight: .bold,design: .serif))
-//                    .foregroundStyle(.white)
-//                    .shadow(radius: 20)
-//
-//                Button("開始測驗") {
-//                    path.append("quiz")  // ← Push QuizView
-//                }
-//                .font(.title2)
-//                .fontWeight(.bold)
-//                .padding()
-//                .frame(width:150)
-//                .background(Color(red: 97/255, green: 37/255, blue: 30/255))
-//                .foregroundStyle(.background)
-//                .cornerRadius(30)
-//            }
-//        }
-//        .navigationDestination(for: String.self) { value in
-//            if value == "quiz" {
-//                QuizView(path: $path)
-//            }
-//        }
-//    }
-//}
-//
-//struct QuizView: View {
-//    @Binding var path: NavigationPath
-//    @State private var showResult = false
-//
-//    var body: some View {
-//            .navigationDestination(isPresented: $showResult) {
-//                ResultView(path: $path)
-//            }
-//    }
-//    
-//    struct ResultView: View {
-//        @Binding var path: NavigationPath
-//
-//        var body: some View {
-//            VStack(spacing: 20) {
-//
-//                Text("鑑定結果")
-//
-//                Button("回到首頁") {
-//                    path.removeLast(path.count)  // ← 回到最根部 HomeView
-//                }
-//                .fontWeight(.bold)
-//                .padding()
-//                .frame(width: 150)
-//                .background(Color(red: 97/255, green: 37/255, blue: 30/255))
-//                .foregroundStyle(.background)
-//                .cornerRadius(30)
-//            }
-//        }
-//    }
-//
-//    func endGame() {
-//        showResult = true
-//    }
-//}
-
-#Preview {
-    GameView()
-}

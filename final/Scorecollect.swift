@@ -8,8 +8,9 @@
 import Foundation
 
 struct Scorecollect: Identifiable {
-    let id: UUID = UUID()
+    let id = UUID()
     let name: String
-    let score: String
+    let score: Int
 }
+
 

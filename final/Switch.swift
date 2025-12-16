@@ -10,6 +10,9 @@ struct SwitchView: View {
     var body: some View {
             NavigationStack {
                 VStack(spacing: 10) {
+                    Text("單字勤學王")
+                        .font(.system(size: 50))
+                        .bold()
                     NavigationLink(destination: GameView()) {
                         Text("開始遊戲")
                             .font(.system(size: 40))

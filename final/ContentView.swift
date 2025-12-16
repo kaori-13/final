@@ -14,9 +14,6 @@ struct ContentView: View {
 //                .resizable()
 //                .scaledToFill()
             VStack {
-                Text("單字勤學王")
-                    .font(.system(size: 50))
-                    .bold()
                 SwitchView()
             }
         }

@@ -1,26 +1,22 @@
-import Charts
-import FoundationModels
-import Playgrounds
-import SwiftUI
-
-//struct barline2View: View {
-//    var body: some View {
-//        VStack {
 //
-//            BarlineView()
-//            BarlineView()
-//        }
-//    }
-//}
+//  BarlineView.swift
+//  final
+//
+//  Created by Fanny on 2025/12/16.
+//
 
-struct BarlineView: View {
-    let scores: [Scorecollect] = [
-        Scorecollect(name: "梵谷", score: 500),
-        Scorecollect(name: "達利", score: 800),
-        Scorecollect(name: "安迪", score: 350),
-        Scorecollect(name: "莫內", score: 620),
-        Scorecollect(name: "卡索", score: 900),
-    ]
+
+import SwiftUI
+import Charts
+
+struct BarlineView2: View {
+    @EnvironmentObject var appState: AppState
+
+    var scores: [Scorecollect] {
+        appState.highScores
+            .map { Scorecollect(name: $0.key, score: $0.value) }
+            .sorted { $0.score > $1.score } // 由高到低
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 15) {
@@ -30,10 +26,7 @@ struct BarlineView: View {
                 .padding(.horizontal)
                 .padding(.top)
 
-            // 調整 Chart 區域以容納所有玩家的水平長條圖
             Chart {
-                // 遍歷所有得分記錄
-                // id: \.id 使用 Scorecollect 中定義的 UUID
                 ForEach(scores) { score in
                     BarMark(
                         x: .value("數值", score.score),
@@ -47,16 +40,10 @@ struct BarlineView: View {
                     }
                 }
             }
-            .frame(height: 250)
+            .frame(height: max(250, CGFloat(scores.count) * 40)) // 人多就自動變高
             .padding(.horizontal)
 
             Divider()
-
         }
     }
 }
-
-#Preview {
-    BarlineView()
-}
-

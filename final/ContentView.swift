@@ -9,10 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        ZStack{
-//            Image(.sunflowers)
-//                .resizable()
-//                .scaledToFill()
+        ZStack {
             VStack {
                 SwitchView()
             }
@@ -22,4 +19,5 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
+        .environmentObject(AppState())
 }

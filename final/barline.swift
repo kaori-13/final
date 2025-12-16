@@ -3,60 +3,54 @@ import FoundationModels
 import Playgrounds
 import SwiftUI
 
-//struct barline2View: View {
-//    var body: some View {
-//        VStack {
-//
-//            BarlineView()
-//            BarlineView()
-//        }
-//    }
-//}
-
 struct BarlineView: View {
-    let scores: [Scorecollect] = [
-        Scorecollect(name: "梵谷", score: 500),
-        Scorecollect(name: "達利", score: 800),
-        Scorecollect(name: "安迪", score: 350),
-        Scorecollect(name: "莫內", score: 620),
-        Scorecollect(name: "卡索", score: 900),
-    ]
+    @EnvironmentObject var appState: AppState
+
+    private var scores: [Scorecollect] {
+        let arr = appState.highScores.map { (key, value) in
+            Scorecollect(name: key, score: value)
+        }
+        return arr.sorted { $0.score > $1.score }
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 15) {
-
             Text("📊 玩家歷史高分")
                 .font(.title2)
                 .padding(.horizontal)
                 .padding(.top)
 
-            // 調整 Chart 區域以容納所有玩家的水平長條圖
+            Text("目前選擇的玩家：\(appState.activePlayerName)")
+                .font(.headline)
+                .padding(.horizontal)
+                .foregroundStyle(.secondary)
+
             Chart {
-                // 遍歷所有得分記錄
-                // id: \.id 使用 Scorecollect 中定義的 UUID
-                ForEach(scores) { score in
+                ForEach(scores) { s in
                     BarMark(
-                        x: .value("數值", score.score),
-                        y: .value("玩家", score.name)
+                        x: .value("分數", s.score),
+                        y: .value("玩家", s.name)
                     )
-                    .foregroundStyle(by: .value("玩家", score.name))
                     .annotation(position: .trailing) {
-                        Text("\(score.score)")
+                        Text("\(s.score)")
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
                 }
             }
-            .frame(height: 250)
+            .frame(height: max(250, CGFloat(scores.count) * 40))
             .padding(.horizontal)
 
             Divider()
-
         }
     }
 }
 
+
+
 #Preview {
     BarlineView()
+        .environmentObject(AppState())
 }
+
 

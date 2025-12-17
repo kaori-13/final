@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		369B6BE62EF30908007EE043 /* DotLottie in Frameworks */ = {isa = PBXBuildFile; productRef = 369B6BE52EF30908007EE043 /* DotLottie */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		369B6A302EF10FCC007EE043 /* final.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = final.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -23,6 +27,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				369B6BE62EF30908007EE043 /* DotLottie in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -65,6 +70,7 @@
 			);
 			name = final;
 			packageProductDependencies = (
+				369B6BE52EF30908007EE043 /* DotLottie */,
 			);
 			productName = final;
 			productReference = 369B6A302EF10FCC007EE043 /* final.app */;
@@ -94,6 +100,9 @@
 			);
 			mainGroup = 369B6A272EF10FCC007EE043;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				369B6BE42EF30908007EE043 /* XCRemoteSwiftPackageReference "dotlottie-ios" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 369B6A312EF10FCC007EE043 /* Products */;
 			projectDirPath = "";
@@ -328,6 +337,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		369B6BE42EF30908007EE043 /* XCRemoteSwiftPackageReference "dotlottie-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/LottieFiles/dotlottie-ios";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		369B6BE52EF30908007EE043 /* DotLottie */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 369B6BE42EF30908007EE043 /* XCRemoteSwiftPackageReference "dotlottie-ios" */;
+			productName = DotLottie;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 369B6A282EF10FCC007EE043 /* Project object */;
 }

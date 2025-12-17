@@ -10,6 +10,7 @@ import SwiftUI
 struct GameView: View {
     @EnvironmentObject var appState: AppState
     @Binding var path: NavigationPath
+    @State private var showCongrats = false
 
     struct Question {
         let text: String
@@ -455,10 +456,20 @@ struct GameView: View {
                         }
                     }
             }
+            if showCongrats {
+                Color.black.opacity(0.001).ignoresSafeArea() // allow taps to pass; nearly transparent
+                DotLottieView(fileName: "celebration_confetti", play: $showCongrats, loop: false)
+                    .frame(width: 220, height: 220)
+            }
         }
         .navigationTitle("下一個")
     }
 
+    
+    
+
+    
+    
     // MARK: - Quiz Logic
 
     private func handleTap(option i: Int, correctIndex: Int) {
@@ -482,12 +493,11 @@ struct GameView: View {
             )
         }
 
-        if isCorrect { correctCount += 1 }
-
         if isCorrect {
-            // 答對：很快換下一題
+            // 答對：播放動畫並很快換下一題
+            showCongrats = true
             Task { @MainActor in
-                try? await Task.sleep(nanoseconds: 250_000_000)  // 0.25 秒
+                try? await Task.sleep(nanoseconds: 900_000_000)  // 播放動畫時間 ~0.9 秒
                 advanceOrFinish()
             }
         } else {
@@ -519,6 +529,7 @@ struct GameView: View {
         selectedIndex = nil
         showResult = false
         isLocked = false
+        showCongrats = false
     }
 
     // MARK: - UI Helpers

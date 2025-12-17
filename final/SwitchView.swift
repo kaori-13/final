@@ -10,8 +10,9 @@ enum AppRoute: Hashable {
     case game
     case score
     case user
-    case prize
+    case wrong
 }
+
 
 struct SwitchView: View {
     @State private var path = NavigationPath()
@@ -29,6 +30,10 @@ struct SwitchView: View {
                         .font(.system(size: 50))
                         .bold()
 
+                    NavigationLink(value: AppRoute.user) {
+                        MainButton(title: "選擇玩家")
+                    }
+
                     NavigationLink(value: AppRoute.game) {
                         MainButton(title: "開始遊戲")
                     }
@@ -36,9 +41,8 @@ struct SwitchView: View {
                     NavigationLink(value: AppRoute.score) {
                         MainButton(title: "歷史高分")
                     }
-
-                    NavigationLink(value: AppRoute.user) {
-                        MainButton(title: "設定畫面")
+                    NavigationLink(value: AppRoute.wrong) {
+                        MainButton(title: "歷史錯題")
                     }
                 }
                 .padding(10)
@@ -52,8 +56,8 @@ struct SwitchView: View {
                     BarlineView()
                 case .user:
                     UserView()
-                case .prize:
-                    GameView(path: $path)
+                case .wrong:
+                    WrongHistoryView()
                 }
             }
         }

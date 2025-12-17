@@ -7,8 +7,6 @@
 
 import SwiftUI
 
-import SwiftUI
-
 struct GameView: View {
     @EnvironmentObject var appState: AppState
     @Binding var path: NavigationPath
@@ -16,62 +14,32 @@ struct GameView: View {
     struct Question {
         let text: String
         let options: [String]
-        let correctIndex: Int
+        let correctAnswer: String
+        var correctIndex: Int { options.firstIndex(of: correctAnswer) ?? 0 }
     }
 
     // ✅ 題庫（剛好 10 題）
-    private let questions: [Question] = [
-        .init(
-            text: "The project team must ___ the deadline for the final report.",
-            options: ["meet", "reach", "contact", "arrive"],
-            correctIndex: 0
+    private let allQuestions: [Question] = [
+        Question(
+            text: """
+                            
+                            If you put a ______ under a leaking faucet, you will be surprised at the amount of water collected in
+                                 24 hours.
+                """,
+            options: ["border", "timer", "container", "marker"],
+            correctAnswer: "container"
         ),
-        .init(
-            text: "Please ___ the attached file before the meeting.",
-            options: ["review", "revise", "reserve", "remove"],
-            correctIndex: 0
+        Question(
+            text: """
+                The local farmers’ market is popular as it offers a variety of fresh seasonal ______ to people in the community.
+                """,
+            options: ["produce", "fashion", "brand", "trend"],
+            correctAnswer: "container"
         ),
-        .init(
-            text: "We need to ___ a decision by Friday.",
-            options: ["make", "do", "take", "put"],
-            correctIndex: 0
-        ),
-        .init(
-            text: "She decided to ___ the offer after careful consideration.",
-            options: ["accept", "accepts", "accepted", "accepting"],
-            correctIndex: 0
-        ),
-        .init(
-            text: "The manager will ___ the proposal tomorrow.",
-            options: ["review", "reviews", "reviewed", "reviewing"],
-            correctIndex: 0
-        ),
-        .init(
-            text: "Please ___ your seat belt during the flight.",
-            options: ["fasten", "fastens", "fastened", "fastening"],
-            correctIndex: 0
-        ),
-        .init(
-            text: "They will ___ the meeting until next week.",
-            options: ["postpone", "postpones", "postponed", "postponing"],
-            correctIndex: 0
-        ),
-        .init(
-            text: "We should ___ attention to the details.",
-            options: ["pay", "give", "take", "make"],
-            correctIndex: 0
-        ),
-        .init(
-            text: "He tried to ___ the issue with his teammate.",
-            options: ["discuss", "discussion", "discussed", "discussing"],
-            correctIndex: 0
-        ),
-        .init(
-            text: "The company plans to ___ new products next month.",
-            options: ["launch", "launched", "launches", "launching"],
-            correctIndex: 0
-        )
+        // 你就一直加題目在這裡
     ]
+
+    @State private var questions: [Question] = []
 
     // quiz progress
     @State private var currentIndex = 0
@@ -84,76 +52,98 @@ struct GameView: View {
     @State private var isLocked = false
 
     var body: some View {
-        let q = questions[currentIndex]
-
         ZStack {
             Color.blue.opacity(0.1).ignoresSafeArea()
 
-            VStack(alignment: .leading, spacing: 16) {
+            if questions.indices.contains(currentIndex) {
+                let q = questions[currentIndex]
 
-                // HUD: progress + score
-                HStack {
-                    Text("Q\(currentIndex + 1)/\(questions.count)")
-                        .font(.headline)
-                        .opacity(0.75)
+                VStack(alignment: .leading, spacing: 16) {
 
-                    Spacer()
+                    // HUD: progress + score
+                    HStack {
+                        Text("Q\(currentIndex + 1)/\(questions.count)")
+                            .font(.headline)
+                            .opacity(0.75)
 
-                    Text("Score: \(correctCount)")
-                        .font(.headline)
-                }
+                        Spacer()
 
-                if answeredCount > 0 {
-                    let rate = Double(correctCount) / Double(answeredCount) * 100
-                    Text(String(format: "Accuracy: %.0f%%", rate))
-                        .font(.subheadline)
-                        .opacity(0.7)
-                }
+                        Text("Score: \(correctCount)")
+                            .font(.headline)
+                    }
 
-                Text(q.text)
-                    .font(.title2)
-                    .fontWeight(.semibold)
-                    .padding(.top, 6)
+                    if answeredCount > 0 {
+                        let rate =
+                            Double(correctCount) / Double(answeredCount) * 100
+                        Text(String(format: "Accuracy: %.0f%%", rate))
+                            .font(.subheadline)
+                            .opacity(0.7)
+                    }
 
-                ForEach(q.options.indices, id: \.self) { i in
-                    Button {
-                        handleTap(option: i, correctIndex: q.correctIndex)
-                    } label: {
-                        HStack(spacing: 12) {
-                            Text(letter(for: i) + ".")
-                                .fontWeight(.bold)
+                    Text(q.text)
+                        .font(.title2)
+                        .fontWeight(.semibold)
+                        .multilineTextAlignment(.leading)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.top, 6)
 
-                            Text(q.options[i])
+                    ForEach(q.options.indices, id: \.self) { i in
+                        Button {
+                            handleTap(option: i, correctIndex: q.correctIndex)
+                        } label: {
+                            HStack(spacing: 12) {
+                                Text(letter(for: i) + ".")
+                                    .fontWeight(.bold)
 
-                            Spacer()
+                                Text(q.options[i])
 
-                            if showResult, let selectedIndex {
-                                if i == q.correctIndex {
-                                    Image(systemName: "checkmark.circle.fill")
-                                } else if i == selectedIndex {
-                                    Image(systemName: "xmark.circle.fill")
+                                Spacer()
+
+                                if showResult, let selectedIndex {
+                                    if i == q.correctIndex {
+                                        Image(
+                                            systemName: "checkmark.circle.fill"
+                                        )
+                                    } else if i == selectedIndex {
+                                        Image(systemName: "xmark.circle.fill")
+                                    }
                                 }
                             }
+                            .padding()
+                            .background(
+                                optionBackground(
+                                    i: i,
+                                    correctIndex: q.correctIndex
+                                )
+                            )
+                            .foregroundStyle(.primary)
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
                         }
-                        .padding()
-                        .background(optionBackground(i: i, correctIndex: q.correctIndex))
-                        .foregroundStyle(.primary)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .disabled(isLocked)
                     }
-                    .disabled(isLocked)
-                }
 
-                if showResult {
-                    Text(selectedIndex == q.correctIndex
-                         ? "✅ Correct!"
-                         : "❌ Wrong. Correct answer: \(q.options[q.correctIndex])")
-                    .font(.headline)
-                    .padding(.top, 6)
-                }
+                    if showResult {
+                        Text(
+                            selectedIndex == q.correctIndex
+                                ? "✅ Correct!"
+                                : "❌ Wrong. Correct answer: \(q.options[q.correctIndex])"
+                        )
+                        .font(.headline)
+                        .padding(.top, 6)
+                    }
 
-                Spacer()
+                    Spacer()
+                }
+                .padding()
+            } else {
+                // Loading / placeholder while questions are being prepared
+                ProgressView("載入題目中…")
+                    .task {
+                        if questions.isEmpty {
+                            startNewGame()
+                        }
+                    }
             }
-            .padding()
         }
         .navigationTitle("下一個")
     }
@@ -163,18 +153,30 @@ struct GameView: View {
     private func handleTap(option i: Int, correctIndex: Int) {
         guard !isLocked else { return }
 
+        let q = questions[currentIndex]
+
         selectedIndex = i
         showResult = true
         isLocked = true
 
         answeredCount += 1
         let isCorrect = (i == correctIndex)
+
+        if !isCorrect {
+            let selectedWord = q.options[i]
+            appState.addWrongRecord(
+                question: q.text,
+                correct: q.options[correctIndex],
+                selected: selectedWord
+            )
+        }
+
         if isCorrect { correctCount += 1 }
 
         if isCorrect {
             // 答對：很快換下一題
             Task { @MainActor in
-                try? await Task.sleep(nanoseconds: 250_000_000) // 0.25 秒
+                try? await Task.sleep(nanoseconds: 250_000_000)  // 0.25 秒
                 advanceOrFinish()
             }
         } else {
@@ -191,7 +193,10 @@ struct GameView: View {
         if currentIndex == questions.count - 1 {
             // ✅ 存高分
             let score = correctCount * 100
-            appState.updateHighScore(player: appState.activePlayerName, newScore: score)
+            appState.updateHighScore(
+                player: appState.activePlayerName,
+                newScore: score
+            )
 
             // ✅ 回首頁（清空 NavigationStack）
             path = NavigationPath()
@@ -208,7 +213,8 @@ struct GameView: View {
     // MARK: - UI Helpers
 
     private func letter(for index: Int) -> String {
-        ["A", "B", "C", "D"][index]
+        let letters = Array("ABCDEFGHIJKLMNOPQRSTUVWXYZ").map(String.init)
+        return index < letters.count ? letters[index] : "#"
     }
 
     private func optionBackground(i: Int, correctIndex: Int) -> Color {
@@ -217,9 +223,25 @@ struct GameView: View {
         if i == selectedIndex { return .red.opacity(0.20) }
         return .white.opacity(0.9)
     }
+
+    private func startNewGame() {
+        questions =
+            allQuestions
+            .shuffled()
+            .prefix(10)
+            .map { q in
+                Question(
+                    text: q.text,
+                    options: q.options.shuffled(),
+                    correctAnswer: q.correctAnswer
+                )
+            }
+
+        currentIndex = 0
+        correctCount = 0
+        answeredCount = 0
+    }
 }
-
-
 
 #Preview {
     NavigationStack {

@@ -9,8 +9,11 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        ZStack {
-            VStack {
+        TabView {
+            Tab("Homepage", systemImage: "house.circle.fill") {
+                IntroView()
+            }
+            Tab("Intro", systemImage: "person.circle.fill") {
                 SwitchView()
             }
         }

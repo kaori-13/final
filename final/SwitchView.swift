@@ -11,6 +11,8 @@ enum AppRoute: Hashable {
     case score
     case user
     case wrong
+    case scan
+
 }
 
 
@@ -44,6 +46,10 @@ struct SwitchView: View {
                     NavigationLink(value: AppRoute.wrong) {
                         MainButton(title: "歷史錯題")
                     }
+                    NavigationLink(value: AppRoute.scan) {
+                        MainButton(title: "掃描單字")
+                    }
+
                 }
                 .padding(10)
                 
@@ -58,6 +64,9 @@ struct SwitchView: View {
                     UserView()
                 case .wrong:
                     WrongHistoryView()
+                case .scan:
+                    ScanWordView()
+
                 }
             }
         }
@@ -78,8 +87,10 @@ struct SwitchView: View {
 }
 
 
-#Preview {
-    SwitchView()
-        .environmentObject(AppState())
+struct SwitchView_Previews: PreviewProvider {
+    static var previews: some View {
+        SwitchView()
+            .environmentObject(AppState())
+    }
 }
 

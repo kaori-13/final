@@ -16,3 +16,15 @@ struct finalApp: App {
         }
     }
 }
+
+var wrongHistory: [WrongRecord] = []
+
+func addWrongRecord(question: String, correct: String, selected: String) {
+    let record = WrongRecord(
+        question: question,
+        correctAnswer: correct,
+        selectedAnswer: selected,
+        date: Date()
+    )
+    wrongHistory.insert(record, at: 0)
+}

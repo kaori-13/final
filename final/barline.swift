@@ -3,7 +3,7 @@ import FoundationModels
 import Playgrounds
 import SwiftUI
 
-struct BarlineView: View {
+struct BarlineChartView: View {
     @EnvironmentObject var appState: AppState
 
     private var scores: [Scorecollect] {
@@ -49,8 +49,9 @@ struct BarlineView: View {
 
 
 #Preview {
-    BarlineView()
+    BarlineChartView()
         .environmentObject(AppState())
 }
+
 
 

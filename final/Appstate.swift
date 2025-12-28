@@ -24,8 +24,7 @@ final class AppState: ObservableObject {
     init() { loadScores() }
 
     func updateHighScore(player: String, newScore: Int) {
-        let old = highScores[player] ?? 0
-        if newScore > old { highScores[player] = newScore }
+        highScores[player] = newScore
     }
 
     // ✅ 新增：記錄錯題
@@ -53,6 +52,5 @@ final class AppState: ObservableObject {
         highScores = dict
     }
 }
-
 
 

@@ -9,7 +9,7 @@
 import SwiftUI
 import Charts
 
-struct BarlineView2: View {
+struct BarlineView: View {
     @EnvironmentObject var appState: AppState
 
     var scores: [Scorecollect] {
@@ -47,3 +47,4 @@ struct BarlineView2: View {
         }
     }
 }
+

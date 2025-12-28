@@ -494,6 +494,7 @@ struct GameView: View {
         }
 
         if isCorrect {
+            correctCount += 1
             // 答對：播放動畫並很快換下一題
             showCongrats = true
             Task { @MainActor in
